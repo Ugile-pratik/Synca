@@ -1,0 +1,101 @@
+from django.contrib.auth import views as auth_views
+from django.urls import path, reverse_lazy
+
+from .views import (
+    AboutView,
+    BedAvailabilityToggleView,
+    BookingRequestView,
+    BookingSuccessView,
+    ContactView,
+    HomeView,
+    LoginView,
+    LogoutView,
+    OwnerBedCreateView,
+    OwnerBookingDecisionView,
+    OwnerDashboardView,
+    OwnerOfflineBookingView,
+    OwnerPropertyCreateView,
+    OwnerPropertyUpdateView,
+    OwnerRoomCreateView,
+    PGDetailView,
+    RegisterView,
+    SplashView,
+    StudentBookingCancelView,
+    StudentBookingUpdateDatesView,
+    StudentBookingsView,
+    StudentProfileView,
+)
+
+urlpatterns = [
+    path("", SplashView.as_view(), name="splash"),
+    path("home/", HomeView.as_view(), name="home"),
+    path("about/", AboutView.as_view(), name="about"),
+    path("contact/", ContactView.as_view(), name="contact"),
+    path("login/", LoginView.as_view(), name="login"),
+    path("logout/", LogoutView.as_view(), name="logout"),
+    path("register/", RegisterView.as_view(), name="register"),
+    path("pg/<int:pk>/", PGDetailView.as_view(), name="pg_detail"),
+    path("profile/", StudentProfileView.as_view(), name="student_profile"),
+    path("my-bookings/", StudentBookingsView.as_view(), name="student_bookings"),
+    path("booking/<int:bed_id>/", BookingRequestView.as_view(), name="booking"),
+    path("booking/success/<int:booking_id>/", BookingSuccessView.as_view(), name="booking_success"),
+    path(
+        "booking/<int:booking_id>/dates/",
+        StudentBookingUpdateDatesView.as_view(),
+        name="student_booking_update_dates",
+    ),
+    path(
+        "booking/<int:booking_id>/cancel/",
+        StudentBookingCancelView.as_view(),
+        name="student_booking_cancel",
+    ),
+    path(
+        "api/beds/<int:bed_id>/toggle/",
+        BedAvailabilityToggleView.as_view(),
+        name="bed_toggle_api",
+    ),
+    path("owner/dashboard/", OwnerDashboardView.as_view(), name="owner_dashboard"),
+    path("owner/add-property/", OwnerPropertyCreateView.as_view(), name="add_property"),
+    path("owner/pg/<int:pg_id>/edit/", OwnerPropertyUpdateView.as_view(), name="owner_edit_property"),
+    path("owner/pg/<int:pg_id>/rooms/add/", OwnerRoomCreateView.as_view(), name="owner_add_room"),
+    path("owner/pg/<int:pg_id>/beds/add/", OwnerBedCreateView.as_view(), name="owner_add_bed"),
+    path(
+        "owner/bookings/offline/",
+        OwnerOfflineBookingView.as_view(),
+        name="owner_add_offline_booking",
+    ),
+    path(
+        "owner/bookings/<int:booking_id>/decision/",
+        OwnerBookingDecisionView.as_view(),
+        name="owner_booking_decision",
+    ),
+    path(
+        "password-reset/",
+        auth_views.PasswordResetView.as_view(
+            template_name="auth/password_reset.html",
+            email_template_name="auth/password_reset_email.txt",
+            html_email_template_name="auth/password_reset_email.html",
+            subject_template_name="auth/password_reset_subject.txt",
+            success_url=reverse_lazy("password_reset_done"),
+        ),
+        name="password_reset",
+    ),
+    path(
+        "password-reset/done/",
+        auth_views.PasswordResetDoneView.as_view(template_name="auth/password_reset_done.html"),
+        name="password_reset_done",
+    ),
+    path(
+        "reset/<uidb64>/<token>/",
+        auth_views.PasswordResetConfirmView.as_view(
+            template_name="auth/password_reset_confirm.html",
+            success_url=reverse_lazy("password_reset_complete"),
+        ),
+        name="password_reset_confirm",
+    ),
+    path(
+        "reset/done/",
+        auth_views.PasswordResetCompleteView.as_view(template_name="auth/password_reset_complete.html"),
+        name="password_reset_complete",
+    ),
+]

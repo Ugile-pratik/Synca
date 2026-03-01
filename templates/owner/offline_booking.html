@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Offline Booking - Synca{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Add Offline Booking</h1>
+            <p class="text-muted mb-0">Record a tenant who booked outside the platform</p>
+        </div>
+        <a href="{% url 'owner_dashboard' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+        <div class="card-body p-4">
+            {% if has_available_beds %}
+            <form method="post" id="offlineBookingForm" class="needs-validation" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="row g-4">
+                    <div class="col-12">
+                        <label class="form-label" for="id_bed">Available Bed</label>
+                        {{ form.bed }}
+                        <div class="invalid-feedback{% if form.bed.errors %} d-block{% endif %}" data-feedback-for="bed" data-default="Please select an available bed.">
+                            {% if form.bed.errors %}
+                                {{ form.bed.errors|join:', ' }}
+                            {% else %}
+                                Please select an available bed.
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_first_name">First Name</label>
+                        {{ form.first_name }}
+                        <div class="invalid-feedback{% if form.first_name.errors %} d-block{% endif %}" data-feedback-for="first_name" data-default="Please enter the first name.">
+                            {% if form.first_name.errors %}
+                                {{ form.first_name.errors|join:', ' }}
+                            {% else %}
+                                Please enter the first name.
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_last_name">Last Name</label>
+                        {{ form.last_name }}
+                        <div class="invalid-feedback{% if form.last_name.errors %} d-block{% endif %}" data-feedback-for="last_name" data-default="Please enter the last name.">
+                            {% if form.last_name.errors %}
+                                {{ form.last_name.errors|join:', ' }}
+                            {% else %}
+                                Please enter the last name.
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_email">Email</label>
+                        {{ form.email }}
+                        <div class="invalid-feedback{% if form.email.errors %} d-block{% endif %}" data-feedback-for="email" data-default="Please enter a valid email address.">
+                            {% if form.email.errors %}
+                                {{ form.email.errors|join:', ' }}
+                            {% else %}
+                                Please enter a valid email address.
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" for="id_age">Age</label>
+                        {{ form.age }}
+                        <div class="invalid-feedback{% if form.age.errors %} d-block{% endif %}" data-feedback-for="age" data-default="Enter a valid age between 0 and 120.">
+                            {% if form.age.errors %}
+                                {{ form.age.errors|join:', ' }}
+                            {% else %}
+                                Enter a valid age between 0 and 120.
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" for="id_gender">Gender</label>
+                        {{ form.gender }}
+                        <div class="invalid-feedback{% if form.gender.errors %} d-block{% endif %}" data-feedback-for="gender" data-default="Select a valid option or leave blank.">
+                            {% if form.gender.errors %}
+                                {{ form.gender.errors|join:', ' }}
+                            {% else %}
+                                Select a valid option or leave blank.
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_occupation">Occupation</label>
+                        {{ form.occupation }}
+                        <div class="invalid-feedback{% if form.occupation.errors %} d-block{% endif %}" data-feedback-for="occupation" data-default="Select a valid option or leave blank.">
+                            {% if form.occupation.errors %}
+                                {{ form.occupation.errors|join:', ' }}
+                            {% else %}
+                                Select a valid option or leave blank.
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_contact_number">Contact Number</label>
+                        {{ form.contact_number }}
+                        <div class="invalid-feedback{% if form.contact_number.errors %} d-block{% endif %}" data-feedback-for="contact_number" data-default="Enter a valid contact number or leave blank.">
+                            {% if form.contact_number.errors %}
+                                {{ form.contact_number.errors|join:', ' }}
+                            {% else %}
+                                Enter a valid contact number or leave blank.
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-2"></i> Save Offline Booking
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-door-closed display-4 text-muted"></i>
+                <h2 class="mt-3 h4">No available beds</h2>
+                <p class="text-muted">All beds across your properties are currently occupied. Free up a bed to add an offline booking.</p>
+                <a href="{% url 'owner_dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

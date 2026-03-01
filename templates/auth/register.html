@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Register - Synca{% endblock %}
+
+{% block meta_description %}Create your Synca account to explore verified PG listings, reserve beds, and manage your stay preferences in one streamlined dashboard.{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <h1 class="visually-hidden">Create your Synca account</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card border-0 shadow auth-card">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <div class="d-inline-flex align-items-center gap-2">
+                               <img src="{% static 'images/logo.svg' %}" alt="Synca Logo" style="height: 40px;" loading="lazy">
+                                <div class="text-start">
+                                    <h2 class="mb-0">Synca</h2>
+                                    <p class="small text-muted mb-0">Syncing up with the perfect place</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <ul class="nav nav-pills nav-fill mb-4" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" href="{% url 'login' %}" data-auth-nav>Login</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" href="{% url 'register' %}" data-auth-nav>Register</a>
+                            </li>
+                        </ul>
+                        
+                        <form method="POST" action="{% url 'register' %}" id="registerForm" class="needs-validation" enctype="multipart/form-data" novalidate>
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label for="first_name" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="first_name" name="first_name" 
+                        required placeholder="First name as per ID" value="{{ form.first_name.value|default_if_none:'' }}" minlength="2">
+                    <div class="invalid-feedback">Please enter your first name.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="last_name" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="last_name" name="last_name" 
+                        required placeholder="Last name as per ID" value="{{ form.last_name.value|default_if_none:'' }}" minlength="2">
+                    <div class="invalid-feedback">Please enter your last name.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="age" class="form-label">Age</label>
+                    <input type="number" class="form-control" id="age" name="age" min="0"
+                        required value="{{ form.age.value|default_if_none:'' }}" max="120">
+                    <div class="invalid-feedback">Please provide a valid age.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select class="form-select" id="gender" name="gender">
+                                    <option value="">Select gender</option>
+                                    <option value="male" {% if form.gender.value == "male" %}selected{% endif %}>Male</option>
+                                    <option value="female" {% if form.gender.value == "female" %}selected{% endif %}>Female</option>
+                                    <option value="non_binary" {% if form.gender.value == "non_binary" %}selected{% endif %}>Non-binary</option>
+                                    <option value="prefer_not_to_say" {% if form.gender.value == "prefer_not_to_say" %}selected{% endif %}>Prefer not to say</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="contact_number" class="form-label">Contact Number</label>
+                    <input type="text" class="form-control" id="contact_number" name="contact_number"
+                        required placeholder="e.g., 9876543210" value="{{ form.contact_number.value|default_if_none:'' }}" pattern="^\d{10}$" maxlength="10" inputmode="numeric">
+                    <div class="invalid-feedback">Enter a valid 10-digit contact number.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="profile_photo" class="form-label">Profile Photo (optional)</label>
+                                <input type="file" class="form-control" id="profile_photo" name="profile_photo" accept="image/*">
+                                {% if form.profile_photo.errors %}
+                                <div class="invalid-feedback d-block">{{ form.profile_photo.errors|join:', ' }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" 
+                        required placeholder="your.email@example.com" value="{{ form.email.value|default_if_none:'' }}" autocomplete="email">
+                    <div class="invalid-feedback">Please enter a valid email address.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" 
+                        required placeholder="Choose a unique username" value="{{ form.username.value|default_if_none:'' }}" minlength="3" autocomplete="username">
+                    <div class="invalid-feedback">Choose a username with at least 3 characters.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password1" class="form-label">Password</label>
+                    <div class="input-group input-group-password">
+                        <input type="password" class="form-control" id="password1" name="password1" 
+                            required minlength="8" autocomplete="new-password">
+                        <button type="button" class="btn btn-light border toggle-password" data-target="#password1" aria-label="Show password">
+                            <i class="bi bi-eye-slash"></i>
+                        </button>
+                    </div>
+                    <div class="invalid-feedback">Password must contain at least 8 characters.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password2" class="form-label">Confirm Password</label>
+                    <div class="input-group input-group-password">
+                        <input type="password" class="form-control" id="password2" name="password2" 
+                            required minlength="8" autocomplete="new-password">
+                        <button type="button" class="btn btn-light border toggle-password" data-target="#password2" aria-label="Show password">
+                            <i class="bi bi-eye-slash"></i>
+                        </button>
+                    </div>
+                    <div class="invalid-feedback">Passwords must match.</div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">I am a</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="user_type" 
+                                           id="student" value="student"
+                                           {% if form.user_type.value == "student" or not form.user_type.value %}checked{% endif %}
+                                           onchange="toggleOccupationField()">
+                                    <label class="form-check-label" for="student">
+                                        Student / Young Professional
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="user_type" 
+                                           id="owner" value="owner"
+                                           {% if form.user_type.value == "owner" %}checked{% endif %}
+                                           onchange="toggleOccupationField()">
+                                    <label class="form-check-label" for="owner">
+                                        PG Owner
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mb-3" id="occupation-field" style="display: '{% if form.user_type.value == 'student' or not form.user_type.value %}block{% else %}none{% endif %}';">
+                                <label for="occupation" class="form-label">Occupation</label>
+                                <select class="form-select" id="occupation" name="occupation">
+                                    <option value="">Select</option>
+                                    <option value="student" {% if form.occupation.value == "student" %}selected{% endif %}>Student</option>
+                                    <option value="working" {% if form.occupation.value == "working" %}selected{% endif %}>Working Professional</option>
+                                </select>
+                                <div class="invalid-feedback">Select your occupation.</div>
+                            </div>
+                            {% if form.errors %}
+                            <div class="error">Please correct the errors below.</div>
+                            {% endif %}
+                            <button type="submit" class="btn btn-primary w-100">
+                                Register
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

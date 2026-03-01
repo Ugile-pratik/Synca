@@ -1,0 +1,435 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ pg.pg_name }} - Synca{% endblock %}
+
+{% block meta_description %}Explore {{ pg.pg_name }} in {{ pg.area }}. Check amenities, pricing, and room availability before booking your next PG stay through Synca.{% endblock %}
+
+{% block extra_meta %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LodgingBusiness",
+        "name": "{{ pg.pg_name|escapejs }}",
+        "description": "{{ pg.description|default:'Comfortable shared accommodation'|truncatewords:25|escapejs }}",
+        "url": "{{ request.build_absolute_uri }}",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "{{ pg.address|escapejs }}",
+            "addressLocality": "{{ pg.area|escapejs }}",
+            "addressCountry": "India"
+        },
+        "amenityFeature": [
+            {% for amenity in amenities_list %}
+            {
+                "@type": "LocationFeatureSpecification",
+                "name": "{{ amenity|escapejs }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]
+    }
+    </script>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4" id="pgDetail"
+    data-login-url="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
+    data-user-auth="{% if user.is_authenticated %}true{% else %}false{% endif %}">
+    <a href="{% url 'home' %}" class="btn btn-outline-secondary mb-4">
+        <i class="bi bi-chevron-left me-1"></i> Back to Search
+    </a>
+    
+    <!-- PG Header -->
+    <div class="row mb-5">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <div class="rounded overflow-hidden" style="height: 400px;">
+             {% if primary_image %}
+             <img src="{{ primary_image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ pg.pg_name }} exterior" loading="lazy" decoding="async">
+             {% else %}
+             <img src="https://images.unsplash.com/photo-1721522281545-fad32dd5107a" 
+                 class="w-100 h-100 object-fit-cover" alt="Illustrative accommodation for {{ pg.pg_name }}" loading="lazy" decoding="async">
+             {% endif %}
+            </div>
+            {% if gallery_images %}
+            <div class="row g-2 mt-2">
+                {% for photo in gallery_images %}
+                {% if not primary_image or photo.image.name != primary_image.name %}
+                <div class="col-3">
+                    <div class="ratio ratio-1x1 rounded overflow-hidden">
+                        <img src="{{ photo.image.url }}" class="w-100 h-100 object-fit-cover" alt="Additional view of {{ pg.pg_name }}" loading="lazy" decoding="async">
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <h1 class="mb-2">{{ pg.pg_name }}</h1>
+                    <p class="text-muted mb-1">
+                        <i class="bi bi-geo-alt"></i> {{ pg.area }}
+                    </p>
+                    <p class="text-muted">{{ pg.address }}</p>
+                    <div class="d-flex flex-wrap gap-3 mt-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-house-lock text-primary"></i>
+                            <span class="small text-muted">Lock-in:</span>
+                            <strong>
+                                {% if lock_in_period %}
+                                {{ lock_in_period }} month{{ lock_in_period|pluralize }}
+                                {% else %}
+                                Not specified
+                                {% endif %}
+                            </strong>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-safe text-primary"></i>
+                            <span class="small text-muted">Security deposit:</span>
+                            <strong>
+                                {% if deposit %}
+                                <i class="bi bi-currency-rupee"></i>{{ deposit|floatformat:0 }}
+                                {% else %}
+                                Not applicable
+                                {% endif %}
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="rating-badge fs-6">
+                    <i class="bi bi-star-fill"></i> {{ average_rating|default_if_none:"4.5" }}
+                    <small class="text-muted">({{ reviews|length }})</small>
+                </div>
+            </div>
+            
+            <hr class="my-4">
+            
+            <div>
+                <h2 class="h5 mb-3">Amenities</h2>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for amenity in amenities_list %}
+                    <span class="badge bg-secondary px-3 py-2">{{ amenity }}</span>
+                    {% empty %}
+                    <span class="text-muted">No amenities listed.</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Rooms & Beds Section -->
+    <div class="mb-5">
+        <h2 class="mb-4">Available Rooms & Beds</h2>
+        
+        {% if rooms %}
+        <div class="row g-4">
+            {% for room in rooms %}
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <div class="row align-items-center mb-4">
+                            <div class="col-md-8">
+                                <div class="d-flex align-items-center gap-3 mb-2">
+                                    <h3 class="h4 mb-0">Room {{ room.room_number }}</h3>
+                                    <span class="badge bg-light text-dark border">{{ room.get_room_type_display }}</span>
+                                </div>
+                                <div class="text-muted">
+                                    <i class="bi bi-people me-1"></i> {{ room.total_beds }} beds
+                                    <span class="ms-3">
+                                        <i class="bi bi-check-circle me-1"></i> 
+                                        {{ room.available_beds }} available
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                                <div class="d-flex align-items-center justify-content-md-end">
+                                    <i class="bi bi-currency-rupee fs-4"></i>
+                                    <span class="fs-2 fw-semibold">{{ room.price_per_bed|floatformat:0 }}</span>
+                                    <span class="text-muted ms-2">/month</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-3">
+                        
+                        <p class="small text-muted mb-3">Select a bed:</p>
+                        <div class="row g-3">
+                            {% for bed in room.beds.all %}
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                {% if bed.is_available %}
+                                <a href="{% url 'booking' bed.id %}" 
+                                   class="text-decoration-none bed-selector bed-available">
+                                    <i class="bi bi-door-open fs-3 text-success"></i>
+                                    <div class="mt-2 small">Bed {{ bed.bed_identifier }}</div>
+                                    <i class="bi bi-check-circle text-success mt-1"></i>
+                                    {% if bed.current_booking and not bed.current_occupant %}
+                                    <div class="small text-muted mt-2">Pending assignment</div>
+                                    {% endif %}
+                                </a>
+                                {% else %}
+                                <div class="bed-selector bed-occupied">
+                                    <i class="bi bi-door-closed fs-3 text-muted"></i>
+                                    <div class="mt-2 small">Bed {{ bed.bed_identifier }}</div>
+                                    <i class="bi bi-x-circle text-danger mt-1"></i>
+                                    {% if bed.current_occupant %}
+                                    <div class="small text-muted mt-2">
+                                        <strong>{{ bed.current_occupant.get_full_name|default:bed.current_occupant.username }}</strong><br>
+                                        Age: {{ bed.current_occupant.age|default:"—" }} · {{ bed.current_occupant.get_occupation_display|default:bed.current_occupant.occupation|default:"—" }}
+                                    </div>
+                                    {% elif bed.pending_booking %}
+                                    <div class="small text-warning mt-2">
+                                        Awaiting owner approval for recent booking request.
+                                    </div>
+                                    {% elif bed.current_booking %}
+                                    <div class="small text-muted mt-2">Occupant assigned offline</div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        {% if room.roommate_beds %}
+                        <div class="mt-4">
+                            <h4 class="h6 text-muted text-uppercase mb-3">Current Roommates</h4>
+                            <ul class="list-unstyled small mb-0">
+                                {% for bed in room.roommate_beds %}
+                                <li class="mb-2">
+                                    <strong>{{ bed.current_occupant.get_full_name|default:bed.current_occupant.username }}</strong>
+                                    <span class="text-muted">(Bed {{ bed.bed_identifier }})</span><br>
+                                    <span class="text-muted">Age: {{ bed.current_occupant.age|default:"—" }} · {{ bed.current_occupant.get_occupation_display|default:bed.current_occupant.occupation|default:"—" }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% else %}
+                        <div class="mt-4 text-muted small">No roommates yet.</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            No rooms available at the moment.
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Reviews Section -->
+    <div class="mb-5">
+        <h2 class="mb-4">Share Your Experience</h2>
+        {% if user_can_review %}
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="h5 mb-3">{% if user_review %}Update{% else %}Write{% endif %} a review</h3>
+                {% if review_form %}
+                <form method="post" action="" id="reviewForm" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    {% if review_form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {% for error in review_form.non_field_errors %}
+                        <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="row g-4 align-items-start">
+                        <div class="col-md-4 col-lg-3">
+                            <label class="form-label mb-2">Rating</label>
+                            {{ review_form.rating }}
+                            <div class="d-flex gap-1 rating-stars" role="radiogroup" aria-label="Rate this property">
+                                {% for star in "12345"|make_list %}
+                                <button type="button" class="btn btn-link p-0 star text-decoration-none" data-value="{{ forloop.counter }}" aria-label="{{ forloop.counter }} out of 5">
+                                    <i class="bi bi-star text-muted fs-4"></i>
+                                </button>
+                                {% endfor %}
+                            </div>
+                            <div class="text-danger small mt-2 d-none" id="ratingError">Please select a rating.</div>
+                            {% if review_form.rating.errors %}
+                            <div class="text-danger small mt-2">
+                                {% for error in review_form.rating.errors %}
+                                <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-12 col-lg-9">
+                            <label class="form-label mb-2">Comment</label>
+                            {{ review_form.comment }}
+                            <div class="invalid-feedback">Please share at least 20 characters.</div>
+                            {% if review_form.comment.errors %}
+                            <div class="text-danger small mt-2">
+                                {% for error in review_form.comment.errors %}
+                                <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-4">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        {% if user_review %}Update Review{% else %}Submit Review{% endif %}
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% elif review_eligibility_reason %}
+        <div class="alert alert-info" role="status">
+            {{ review_eligibility_reason }}
+        </div>
+        {% else %}
+        <div class="alert alert-secondary" role="status">
+            Sign in as a student to share your experience.
+        </div>
+        {% endif %}
+    </div>
+
+{% if reviews %}
+<div>
+    <h2 class="mb-4">Reviews</h2>
+    <div class="row g-4">
+        {% for review in reviews %}
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong>{{ review.user.get_full_name|default:review.user.username }}</strong>
+                        <div class="rating-badge">
+                            <i class="bi bi-star-fill"></i> {{ review.rating }}
+                        </div>
+                    </div>
+                    <p class="text-muted mb-2">{{ review.comment }}</p>
+                    <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const reviewForm = document.getElementById("reviewForm");
+    if (!reviewForm) {
+        return;
+    }
+
+    const ratingInput = reviewForm.querySelector("input[name='rating']");
+    const commentField = reviewForm.querySelector("textarea[name='comment']");
+    const ratingError = document.getElementById("ratingError");
+    const stars = Array.from(reviewForm.querySelectorAll(".star"));
+
+    const hideRatingError = () => {
+        if (ratingError) {
+            ratingError.classList.add("d-none");
+        }
+        if (ratingInput) {
+            ratingInput.setCustomValidity("");
+        }
+    };
+
+    const showRatingError = () => {
+        if (ratingError) {
+            ratingError.classList.remove("d-none");
+        }
+        if (ratingInput) {
+            ratingInput.setCustomValidity("Please select a rating.");
+        }
+    };
+
+    const highlight = (value) => {
+        if (!stars.length) {
+            return;
+        }
+        let numericValue = parseInt(value, 10);
+        if (isNaN(numericValue)) {
+            numericValue = 0;
+        }
+        stars.forEach((star, index) => {
+            const icon = star.querySelector("i");
+            if (!icon) {
+                return;
+            }
+            const starValue = index + 1;
+            star.setAttribute("aria-checked", starValue === numericValue ? "true" : "false");
+            if (starValue <= numericValue) {
+                icon.classList.remove("bi-star", "text-muted");
+                icon.classList.add("bi-star-fill", "text-warning");
+            } else {
+                icon.classList.remove("bi-star-fill", "text-warning");
+                icon.classList.add("bi-star", "text-muted");
+            }
+        });
+    };
+
+    if (ratingInput && stars.length) {
+        const initialValue = parseInt(ratingInput.value || "0", 10);
+        if (initialValue > 0) {
+            highlight(initialValue);
+        }
+
+        stars.forEach((star) => {
+            star.addEventListener("click", (event) => {
+                event.preventDefault();
+                const value = parseInt(star.dataset.value, 10);
+                ratingInput.value = value;
+                highlight(value);
+                hideRatingError();
+            });
+            star.addEventListener("mouseenter", () => {
+                highlight(parseInt(star.dataset.value, 10));
+            });
+            star.addEventListener("mouseleave", () => {
+                highlight(parseInt(ratingInput.value || "0", 10));
+            });
+        });
+    }
+
+    if (commentField) {
+        commentField.addEventListener("input", () => {
+            commentField.setCustomValidity("");
+        });
+    }
+
+    reviewForm.addEventListener("submit", (event) => {
+        let valid = true;
+
+        if (ratingInput && (!ratingInput.value || parseInt(ratingInput.value, 10) < 1)) {
+            showRatingError();
+            valid = false;
+        } else {
+            hideRatingError();
+        }
+
+        if (commentField) {
+            const trimmed = commentField.value.trim();
+            if (trimmed.length < 20) {
+                commentField.setCustomValidity("Please share at least 20 characters.");
+                valid = false;
+            } else {
+                commentField.setCustomValidity("");
+            }
+        }
+
+        if (!reviewForm.checkValidity()) {
+            valid = false;
+        }
+
+        if (!valid) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        reviewForm.classList.add("was-validated");
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Synca - Syncing up with the perfect place{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Discover verified PG and hostel listings with Synca. Compare amenities, prices, and locations to find a comfortable stay in minutes.{% endblock %}">
+    {% block extra_meta %}{% endblock %}
+
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/logo.svg' %}">
+    <link rel="alternate icon" type="image/png" href="{% static 'images/logo.png' %}">
+
+    <link rel="preload" href="{% static 'css/fonts/bootstrap-icons.woff2' %}" as="font" type="font/woff2" crossorigin>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}">
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    {% block extra_css %}{% endblock %}
+
+    <!-- Bootstrap 5 CSS -->
+    <link rel="preload" href="{% static 'css/bootstrap.min.css' %}" as="style">
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="preload" href="{% static 'css/bootstrap-icons.css' %}" as="style">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-icons.css' %}">
+
+</head>
+<body
+    data-auth="{% if request.user.is_authenticated %}true{% else %}false{% endif %}"
+    data-user-type="{% if request.user.is_authenticated %}{{ request.user.user_type|default_if_none:'' }}{% endif %}"
+    data-page="{{ request.resolver_match.url_name|default_if_none:'' }}"
+>
+  
+    <!-- Navbar -->
+    {% include 'partials/navbar.html' %}
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+    
+    <!-- Footer -->
+    {% include 'partials/footer.html' %}
+    
+    <!-- Bootstrap JS Bundle -->
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}" defer></script>
+    <script type="module" src="{% static 'js/main.js' %}"></script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,219 @@
+@media (max-width: 992px) {
+  .navbar {
+    padding: 12px 20px;
+  }
+
+  .navbar-collapse {
+    position: fixed;
+    inset: 0;
+    padding: 96px 24px 32px;
+    background: #ffffff;
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+    z-index: 1090;
+  }
+
+  .navbar-collapse.show {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+    overflow-y: auto;
+  }
+
+  .navbar-collapse.collapsing {
+    height: 100vh !important;
+    transform: translateY(-100%);
+    transition: none;
+  }
+
+  body.nav-open {
+    overflow: hidden;
+  }
+
+  .navbar-nav {
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .navbar-nav .nav-link::after {
+    bottom: -0.15rem;
+  }
+
+  .navbar-nav .nav-link,
+  .navbar-nav .btn {
+    display: block;
+    padding: 10px 0;
+    font-weight: 500;
+    color: var(--primary-color);
+    text-align: left;
+    background: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    width: 100%;
+  }
+
+  .navbar-nav .btn {
+    padding-inline: 0;
+  }
+
+  .navbar-nav .nav-link:hover,
+  .navbar-nav .btn:hover {
+    background: none;
+    color: var(--primary-color);
+  }
+
+  .navbar-nav .nav-link i,
+  .navbar-nav .btn i {
+    display: none;
+  }
+
+  .hero-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+  }
+
+  .hero-description {
+    font-size: 1rem;
+  }
+
+  .features-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .feature-card {
+    padding: 28px;
+  }
+
+  .dashboard-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid,
+  .transactions-list {
+    grid-column: 1;
+  }
+
+  .transactions-list {
+    max-height: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-links {
+    display: none;
+  }
+
+  .hero-content {
+    padding: 40px 24px;
+  }
+
+  .hero-description {
+    max-width: 100%;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .cta-section {
+    padding: 64px 24px;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .cta-buttons .btn {
+    width: 100%;
+  }
+
+  .auth-container {
+    padding: 24px;
+  }
+
+  .auth-card {
+    border-radius: 20px;
+  }
+
+  .dashboard-wrapper {
+    padding: 24px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .transactions-list {
+    gap: 12px;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  body {
+    font-size: 15px;
+  }
+
+  .hero-section {
+    padding: 40px 0 48px;
+  }
+
+  .hero-title {
+    font-size: clamp(1.75rem, 7vw, 2.5rem);
+  }
+
+  .hero-description {
+    font-size: 0.95rem;
+  }
+
+  .cta-section {
+    padding: 48px 20px;
+  }
+
+  .dashboard-wrapper {
+    padding: 20px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .filter-group {
+    width: 100%;
+  }
+
+  .filter-group .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 400px) {
+  .dashboard-wrapper {
+    padding: 16px;
+  }
+
+  .transactions-list {
+    padding: 12px;
+  }
+
+  .transaction-item {
+    padding: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .transaction-amount {
+    font-size: 1rem;
+  }
+
+  .transaction-date {
+    font-size: 0.85rem;
+  }
+}

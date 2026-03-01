@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Login - Synca{% endblock %}
+
+{% block meta_description %}Access your Synca account to manage bookings, track property approvals, and stay up to date on PG availability across Bangalore.{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <h1 class="visually-hidden">Log in to Synca</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card border-0 shadow auth-card">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <div class="d-inline-flex align-items-center gap-2">
+                                <img src="{% static 'images/logo.svg' %}" alt="Synca Logo" style="height: 40px;" loading="lazy">
+                                <div class="text-start">
+                                    <h2 class="mb-0">Synca</h2>
+                                    <p class="small text-muted mb-0">Syncing up with the perfect place</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <ul class="nav nav-pills nav-fill mb-4" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" href="{% url 'login' %}" data-auth-nav>Login</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" href="{% url 'register' %}" data-auth-nav>Register</a>
+                            </li>
+                        </ul>
+                        
+                        <form method="POST" action="{% url 'login' %}" id="loginForm" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Email or Username</label>
+                    <input type="text" class="form-control" id="username" name="username" 
+                        required placeholder="your.email@example.com or username" minlength="2" autocomplete="username">
+                    <div class="invalid-feedback">Please enter your email address or username.</div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="password" class="form-label">Password</label>
+                    <div class="input-group input-group-password">
+                        <input type="password" class="form-control" id="password" name="password" 
+                            required minlength="6" autocomplete="current-password">
+                        <button type="button" class="btn btn-light border toggle-password" data-target="#password" aria-label="Show password">
+                            <i class="bi bi-eye-slash"></i>
+                        </button>
+                    </div>
+                    <div class="invalid-feedback">Your password must be at least 6 characters long.</div>
+                            </div>
+
+                            <div class="d-flex justify-content-end mb-4">
+                                <a class="small" href="{% url 'password_reset' %}">Forgot password?</a>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100 mb-3">
+                                Login
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

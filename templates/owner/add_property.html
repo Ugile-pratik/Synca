@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Add Property - Synca{% endblock %}
+
+{% block meta_description %}List a new PG or hostel on Synca by sharing property details, amenities, and images so students can discover your listing.{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Add New Property</h1>
+                <a href="{% url 'owner_dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
+                </a>
+            </div>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors|join:', ' }}
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Basic Information -->
+                        <div class="mb-5">
+                            <h2 class="h5 mb-4 pb-2 border-bottom">Basic Information</h2>
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <label for="id_pg_name" class="form-label">PG/Hostel Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control{% if form.pg_name.errors %} is-invalid{% endif %}" id="id_pg_name" name="pg_name"
+                                               required placeholder="e.g., Sunshine PG" value="{{ form.pg_name.value|default:'' }}">
+                                    {% if form.pg_name.errors %}
+                                        <div class="invalid-feedback">{{ form.pg_name.errors|join:', ' }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="id_area" class="form-label">Area <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control{% if form.area.errors %} is-invalid{% endif %}" id="id_area" name="area"
+                                               required placeholder="e.g., Koramangala" value="{{ form.area.value|default:'' }}">
+                                    {% if form.area.errors %}
+                                        <div class="invalid-feedback">{{ form.area.errors|join:', ' }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="id_address" class="form-label">Full Address <span class="text-danger">*</span></label>
+                                    <textarea class="form-control{% if form.address.errors %} is-invalid{% endif %}" id="id_address" name="address" rows="2" required placeholder="Enter complete address with landmarks">{{ form.address.value|default:'' }}</textarea>
+                                    {% if form.address.errors %}
+                                        <div class="invalid-feedback">{{ form.address.errors|join:', ' }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="id_city" class="form-label">City <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control{% if form.city.errors %} is-invalid{% endif %}" id="id_city" name="city"
+                                               required placeholder="e.g., Bangalore" value="{{ form.city.value|default:'' }}">
+                                    {% if form.city.errors %}
+                                        <div class="invalid-feedback">{{ form.city.errors|join:', ' }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="id_pincode" class="form-label">PIN Code <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control{% if form.pincode.errors %} is-invalid{% endif %}" id="id_pincode" name="pincode"
+                                               required pattern="[0-9]{6}" placeholder="e.g., 560034" value="{{ form.pincode.value|default:'' }}">
+                                    {% if form.pincode.errors %}
+                                        <div class="invalid-feedback">{{ form.pincode.errors|join:', ' }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="id_description" class="form-label">Description</label>
+                                    <textarea class="form-control{% if form.description.errors %} is-invalid{% endif %}" id="id_description" name="description" rows="4" placeholder="Describe your property, facilities, and nearby locations...">{{ form.description.value|default:'' }}</textarea>
+                                    {% if form.description.errors %}
+                                        <div class="invalid-feedback">{{ form.description.errors|join:', ' }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="id_pg_type" class="form-label">PG Type <span class="text-danger">*</span></label>
+                                    <select class="form-select{% if form.pg_type.errors %} is-invalid{% endif %}" id="id_pg_type" name="pg_type" required>
+                                        {% for value, label in form.pg_type.field.choices %}
+                                            <option value="{{ value }}" {% if form.pg_type.value == value %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    {% if form.pg_type.errors %}
+                                        <div class="invalid-feedback">{{ form.pg_type.errors|join:', ' }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="id_deposit" class="form-label">Deposit Amount</label>
+                     <input type="number" class="form-control{% if form.deposit.errors %} is-invalid{% endif %}" id="id_deposit" name="deposit" step="0.01" min="0"
+                         placeholder="e.g., 5000" value="{{ form.deposit.value|default:'' }}">
+                                    {% if form.deposit.errors %}
+                                        <div class="invalid-feedback">{{ form.deposit.errors|join:', ' }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="id_lock_in_period" class="form-label">Lock-in Period (months)</label>
+                     <input type="number" class="form-control{% if form.lock_in_period.errors %} is-invalid{% endif %}" id="id_lock_in_period" name="lock_in_period" min="0"
+                         placeholder="e.g., 3" value="{{ form.lock_in_period.value|default:'' }}">
+                                    {% if form.lock_in_period.errors %}
+                                        <div class="invalid-feedback">{{ form.lock_in_period.errors|join:', ' }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Amenities -->
+                        <div class="mb-5">
+                            <h2 class="h5 mb-4 pb-2 border-bottom">Amenities</h2>
+                            <div class="row g-3">
+                                {% with selected=form.amenities.value %}
+                                    {% for value, label in amenity_choices %}
+                                        <div class="col-md-4 col-sm-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="amenities" value="{{ value }}" id="amenity-{{ forloop.counter }}"
+                                                       {% if selected and value in selected %}checked{% endif %}>
+                                                <label class="form-check-label" for="amenity-{{ forloop.counter }}">
+                                                    {{ label }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% endwith %}
+                            </div>
+                            {% if form.amenities.errors %}
+                                <div class="text-danger small mt-2">{{ form.amenities.errors|join:', ' }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Property Photos -->
+                        <div class="mb-5">
+                            <h2 class="h5 mb-4 pb-2 border-bottom">Property Photos</h2>
+                            <div class="mb-3">
+                                <label for="id_property_images" class="form-label">Upload at least four photos <span class="text-danger">*</span></label>
+                                {{ form.property_images }}
+                                <div class="form-text">Select four or more images to help students get a complete view. Hold Ctrl (Cmd on Mac) to select multiple files.</div>
+                                {% if form.property_images.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.property_images.errors|join:', ' }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Note:</strong> After creating the property, you can add rooms and beds from your dashboard.
+                        </div>
+                        
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                Submit Property for Approval
+                            </button>
+                            <a href="{% url 'owner_dashboard' %}" class="btn btn-outline-secondary btn-lg">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
